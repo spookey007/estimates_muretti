@@ -88,7 +88,7 @@ export function EstimateEditor({
           disabled={pdfLoading}
           className="rounded border border-stone-800 bg-stone-900 px-5 py-2 text-sm font-medium text-white disabled:opacity-60"
         >
-          {pdfLoading ? "Preparing PDFù" : "Download PDF"}
+          {pdfLoading ? "Preparing PDF..." : "Download PDF"}
         </button>
       </div>
 
@@ -318,7 +318,7 @@ function LineRow({
             })
           }
         >
-          <option value="">ù</option>
+          <option value="">-</option>
           <option value="510">510</option>
           <option value="414">414</option>
         </select>
@@ -330,7 +330,7 @@ function LineRow({
         />
       </td>
       <td className="border-l border-stone-100 p-2 font-mono text-xs text-stone-700">
-        {resolvedLabel || "ù"}
+        {resolvedLabel || "-"}
       </td>
       <td className="p-2 font-mono text-xs">{row.code}</td>
       <td className="p-2">{row.unit_price.toFixed(2)}</td>
@@ -339,7 +339,7 @@ function LineRow({
         <AccuracyBadge accuracy={row.accuracy} />
       </td>
       <td className="max-w-[14rem] p-2 text-xs text-stone-600">
-        {snapWhy ?? (row.accuracy === "exact" ? "Matches catalog" : "ù")}
+        {snapWhy ?? (row.accuracy === "exact" ? "Matches catalog" : "-")}
       </td>
     </tr>
   );
@@ -377,27 +377,27 @@ function CalculationGuide() {
           matched to a catalog code; unit price is taken from that row in the list.
         </p>
         <p>
-          <strong>Why L10 shelf shows &quot;snapped&quot; L903 when you entered 900:</strong>{" "}
-          Back panels and shelves use <em>different</em> standard widths in the PDF.
+          <strong>Why L10 shelf shows snapped L903 when you entered 900:</strong>{" "}
+          Back panels and shelves use different standard widths in the PDF.
           Panels: 480, 640, 800, <strong>900</strong> mm. Shelves: 483, 643, 803,{" "}
-          <strong>903</strong> mm (+3 mm vs the bay). The engine picks the{" "}
-          <strong>smallest catalog size ? your input</strong> (snap up). So 900 ?
+          <strong>903</strong> mm (+3 mm vs the bay). The engine picks the smallest
+          catalog size greater than or equal to your input (snap up). So 900 becomes
           903, code <strong>1RL1710</strong>, 88.00 EUR (melamine, depth 510).
         </p>
         <p>
           <strong>Exact match:</strong> enter <strong>903</strong> in{" "}
           <code className="rounded bg-white px-1">width_mm</code> for a shelf on a
-          900 mm bay ù accuracy turns green &quot;exact&quot;.
+          900 mm bay - accuracy turns green exact.
         </p>
         <p>
           <strong>Depth 510:</strong> use column{" "}
           <code className="rounded bg-white px-1">depth_type</code> (510 or 414) or
-          put 510 in <code className="rounded bg-white px-1">depth_mm</code> ù both
+          put 510 in <code className="rounded bg-white px-1">depth_mm</code> - both
           work for shelves.
         </p>
         <p className="text-stone-600">
           Cuts to non-catalog sizes are surcharges in the PDF (e.g. TALARI shelf width
-          cut 29 EUR) ù not auto-added in this tool yet.
+          cut 29 EUR) - not auto-added in this tool yet.
         </p>
       </div>
     </details>
