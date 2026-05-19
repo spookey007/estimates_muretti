@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "project_name": "Sample master closet",
+  "price_list_id": "scenika-2023-10",
+  "measurement_unit": "mm",
+  "measurement_basis": "finished",
+  "system": "with_panels",
+  "finish": "melamine",
+  "currency_display": "EUR",
+  "lines": [
+    {
+      "line_id": "L1",
+      "room": "Master",
+      "role": "upright",
+      "quantity": 2,
+      "h": 2187,
+      "notes": "Exact catalog height ? 1PC11F0 @ 84 EUR"
+    },
+    {
+      "line_id": "L2",
+      "room": "Master",
+      "role": "back_panel",
+      "quantity": 1,
+      "h": 2187,
+      "l": 640,
+      "notes": "Exact 2187×640 ? 1PN15F0 @ 143 EUR"
+    },
+    {
+      "line_id": "L3",
+      "room": "Master",
+      "role": "shelf",
+      "quantity": 4,
+      "l": 640,
+      "depth_type": "510",
+      "notes": "Snaps to L643 ? 1RL1510 @ 77 EUR each"
+    },
+    {
+      "line_id": "L4",
+      "room": "Master",
+      "role": "footboard",
+      "quantity": 1,
+      "l": 950,
+      "notes": "Band 100–1000 mm ? 1PE1110 @ 152 EUR"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+project_name,Sample master closet
+measurement_unit,mm
+measurement_basis,finished
+system,with_panels
+finish,melamine
+line_id,room,role,quantity,height_mm,width_mm,depth_mm,side,depth_type,notes
+L1,Master,upright,2,2187,,,,,
+L2,Master,back_panel,1,2187,640,,,,,
