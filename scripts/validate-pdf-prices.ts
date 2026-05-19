@@ -188,6 +188,22 @@ const CASES: PdfCase[] = [
     expectAccuracy: "exact",
   },
   {
+    id: "T19a",
+    pdfRef: "p.30 shelf L903 D510 (900 bay +3mm)",
+    line: { line_id: "1", role: "shelf", quantity: 1, l: 900, depth_type: "510" },
+    expectedCode: "1RL1710",
+    expectedUnitMelamine: 88,
+    expectAccuracy: "snapped",
+  },
+  {
+    id: "T19b",
+    pdfRef: "p.30 shelf exact L903",
+    line: { line_id: "1", role: "shelf", quantity: 1, l: 903, d: 510 },
+    expectedCode: "1RL1710",
+    expectedUnitMelamine: 88,
+    expectAccuracy: "exact",
+  },
+  {
     id: "T19",
     pdfRef: "snap: shelf input L640 -> catalog L643",
     line: { line_id: "1", role: "shelf", quantity: 1, l: 640, depth_type: "510" },

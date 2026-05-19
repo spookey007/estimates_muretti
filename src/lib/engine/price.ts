@@ -450,7 +450,12 @@ function priceLine(
 
       }
 
-      const depth = line.depth_type === "414" ? 414 : 510;
+      const depth: 510 | 414 =
+        line.depth_type === "414" || line.depth_type === "510"
+          ? Number(line.depth_type)
+          : dMm === 414 || dMm === 510
+            ? (dMm as 510 | 414)
+            : 510;
 
       const snappedL = snapUp(lMm, RULES.widthsShelf);
 

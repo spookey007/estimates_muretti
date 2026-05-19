@@ -41,9 +41,31 @@ export async function POST(req: Request) {
         price_list_id: String(form.get("price_list_id") || "scenika-2023-10"),
       };
       request = parseCsvRequest(text, meta);
+    } else if (contentType.includes("application/json")) {
+      const body = (await req.json()) as EstimateRequest;
+      if (!body.project_name || !body.lines?.length) {
+        return NextResponse.json(
+          { error: "JSON body must include project_name and lines[]" },
+          { status: 400 },
+        );
+      }
+      request = {
+        schema_version: body.schema_version || "1.0",
+        project_name: body.project_name,
+        price_list_id: body.price_list_id || "scenika-2023-10",
+        measurement_unit: body.measurement_unit || "mm",
+        measurement_basis: body.measurement_basis || "finished",
+        system: body.system || "with_panels",
+        finish: body.finish || "melamine",
+        currency_display: body.currency_display || "EUR",
+        lines: body.lines,
+      };
     } else {
       return NextResponse.json(
-        { error: "Upload a CSV file (multipart/form-data with field file)" },
+        {
+          error:
+            "Upload CSV (multipart file) or POST application/json EstimateRequest",
+        },
         { status: 400 },
       );
     }

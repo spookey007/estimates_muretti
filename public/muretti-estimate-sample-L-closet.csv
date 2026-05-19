@@ -1,0 +1,25 @@
+project_name,L-Shaped Walk-In Closet - Full Sample,,,,,,,,
+measurement_unit,mm,,,,,,,,
+measurement_basis,finished,,,,,,,,
+system,with_panels,,,,,,,,
+finish,melamine,,,,,,,,
+line_id,room,role,quantity,height_mm,width_mm,depth_mm,side,depth_type,notes
+L01,Wall 1 - left run,upright,4,2187,,,,,A Montante - ends and between bays
+L02,Corner,corner_upright,1,2187,,,,dx,B Montante angolare Dx
+L03,Corner,corner_upright,1,2187,,,,sx,B Montante angolare Sx
+L04,Wall 1 - left run,back_panel,1,2187,900,,,,C Schienale bay 1 (900mm)
+L05,Wall 1 - left run,back_panel,1,2187,900,,,,C Schienale bay 2 (900mm)
+L06,Wall 1 - left run,back_panel,1,2187,900,,,,C Schienale bay 3 (900mm)
+L07,Wall 2 - return run,back_panel,1,2187,800,,,,C Schienale bay 800mm
+L08,Wall 2 - return run,back_panel,1,2187,640,,,,C Schienale bay 640mm
+L09,Wall 2 - return run,back_panel,1,2187,480,,,,C Schienale bay 480mm
+L10,Wall 1 - left run,shelf,2,,900,,,510,F Ripiano upper bay 1-2
+L11,Wall 1 - left run,shelf,2,,900,,,510,F Ripiano lower bay 1-2
+L12,Wall 1 - left run,shelf,2,,900,,,510,F Ripiano bay 3
+L13,Wall 2 - return run,shelf,2,,800,,,510,F Ripiano 800mm bays
+L14,Wall 2 - return run,shelf,2,,640,,,510,F Ripiano 640mm bay
+L15,Wall 2 - return run,shelf,1,,480,,,510,F Ripiano 480mm bay
+L16,Dressing area,mirror,1,958,638,,,,E Specchio on 640 bay (H958 L638)
+L17,Perimeter,footboard,1,,2724,,,,G Pedana - total wall length approx
+L18,Wall 1 - top,linear_filler,1,2187,513,,,,Linear closing filler top rail
+L19,Wall 2 - top,linear_filler,1,2187,513,,,,Linear closing filler return wall
