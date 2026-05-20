@@ -1,13 +1,28 @@
+import { parseFinish } from "@/lib/field-placeholders";
 import type { EstimateRequest, EstimateLineInput, LineRole } from "@/lib/types";
 
 const ROLES = new Set<LineRole>([
   "upright",
   "corner_upright",
+  "corner_filler",
   "back_panel",
   "linear_filler",
   "mirror",
   "shelf",
   "footboard",
+  "shoe_rack",
+  "clothes_tube",
+  "hanging_drawer",
+  "hanging_drawer_simple",
+  "hanging_raster",
+  "custom_panel_sqm",
+  "ral_setup",
+  "flexy_led_shelf",
+  "flexy_led_drawer",
+  "flexy_led_side",
+  "flexy_power",
+  "flexy_cable",
+  "product_code",
 ]);
 
 const SETTING_KEYS = new Set([
@@ -122,6 +137,7 @@ export function parseCsvRequest(
     if (!role || !ROLES.has(role)) {
       throw new Error(`Row ${i + 1}: unknown or missing role "${role}"`);
     }
+    const finishCol = idx("finish") >= 0 ? parseFinish(cols[idx("finish")]) : undefined;
     rows.push({
       line_id: cols[idx("line_id")] || `L${rows.length + 1}`,
       room: cols[idx("room")] || undefined,
@@ -132,7 +148,16 @@ export function parseCsvRequest(
       d: num(cols[idx("d")]),
       side: (cols[idx("side")] as EstimateLineInput["side"]) || undefined,
       depth_type: (cols[idx("depth_type")] as "510" | "414") || undefined,
+      finish: finishCol,
       notes: cols[idx("notes")] || undefined,
+      product_code: cols[idx("product_code")] || undefined,
+      drawer_variant:
+        (cols[idx("drawer_variant")] as EstimateLineInput["drawer_variant"]) || undefined,
+      drawer_material:
+        (cols[idx("drawer_material")] as EstimateLineInput["drawer_material"]) ||
+        undefined,
+      raster_variant:
+        (cols[idx("raster_variant")] as EstimateLineInput["raster_variant"]) || undefined,
     });
   }
 

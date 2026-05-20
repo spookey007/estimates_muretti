@@ -37,6 +37,27 @@ const checks = [
     ok: result.total_net === 311,
     detail: String(result.total_net),
   },
+  {
+    label: "line totals sum to total_net",
+    ok: (() => {
+      const sum =
+        result.lines.reduce((a, l) => a + Math.round(l.line_total * 100), 0) / 100;
+      const sub =
+        Math.round(
+          ((result.subtotals.structural ?? 0) +
+            (result.subtotals.equipment ?? 0) +
+            (result.subtotals.customization ?? 0) +
+            (result.subtotals.led ?? 0) +
+            (result.subtotals.delivery ?? 0) +
+            (result.subtotals.unresolved ?? 0)) *
+            100,
+        ) / 100;
+      return (
+        Math.abs(sum - result.total_net) < 0.01 && Math.abs(sub - result.total_net) < 0.01
+      );
+    })(),
+    detail: `lines=${result.lines.reduce((a, l) => a + l.line_total, 0)} total=${result.total_net}`,
+  },
 ];
 
 let failed = 0;

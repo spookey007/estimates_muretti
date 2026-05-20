@@ -12,14 +12,15 @@ type PdfCase = {
   expectedCode: string;
   expectedUnitMelamine?: number;
   expectedUnitLacquered?: number;
-  expectAccuracy?: "exact" | "snapped";
+  expectAccuracy?: "exact" | "snapped" | "estimated";
   system?: EstimateRequest["system"];
   finish?: EstimateRequest["finish"];
+  basis?: EstimateRequest["measurement_basis"];
 };
 
 function req(
   lines: EstimateLineInput[],
-  overrides?: Partial<EstimateRequest>,
+  overrides?: Partial<EstimateRequest> & { basis?: EstimateRequest["measurement_basis"] },
 ): EstimateRequest {
   const base: EstimateRequest = {
     schema_version: "1.0",
@@ -36,6 +37,9 @@ function req(
     ...base,
     ...(overrides.system !== undefined ? { system: overrides.system } : {}),
     ...(overrides.finish !== undefined ? { finish: overrides.finish } : {}),
+    ...(overrides.basis !== undefined
+      ? { measurement_basis: overrides.basis }
+      : {}),
   };
 }
 
@@ -193,7 +197,7 @@ const CASES: PdfCase[] = [
     line: { line_id: "1", role: "shelf", quantity: 1, l: 900, depth_type: "510" },
     expectedCode: "1RL1710",
     expectedUnitMelamine: 88,
-    expectAccuracy: "snapped",
+    expectAccuracy: "exact",
   },
   {
     id: "T19b",
@@ -205,11 +209,11 @@ const CASES: PdfCase[] = [
   },
   {
     id: "T19",
-    pdfRef: "snap: shelf input L640 -> catalog L643",
+    pdfRef: "finished compartment 640 +3mm -> catalog 643 exact",
     line: { line_id: "1", role: "shelf", quantity: 1, l: 640, depth_type: "510" },
     expectedCode: "1RL1510",
     expectedUnitMelamine: 77,
-    expectAccuracy: "snapped",
+    expectAccuracy: "exact",
   },
   {
     id: "T20",
@@ -217,7 +221,100 @@ const CASES: PdfCase[] = [
     line: { line_id: "1", role: "back_panel", quantity: 1, h: 2000, l: 500 },
     expectedCode: "1PN15F0",
     expectedUnitMelamine: 143,
-    expectAccuracy: "snapped",
+    expectAccuracy: "estimated",
+  },
+  {
+    id: "T22",
+    pdfRef: "p.19 corner filler H2187 Dx",
+    line: { line_id: "1", role: "corner_filler", quantity: 1, h: 2187, side: "dx" },
+    expectedCode: "1PF11F1",
+    expectedUnitMelamine: 154,
+    expectAccuracy: "exact",
+  },
+  {
+    id: "T23",
+    pdfRef: "p.30 shoe rack L483 D510",
+    line: { line_id: "1", role: "shoe_rack", quantity: 1, l: 483, depth_type: "510" },
+    expectedCode: "5PS1310",
+    expectedUnitMelamine: 105,
+    expectAccuracy: "exact",
+  },
+  {
+    id: "T24",
+    pdfRef: "p.34 clothes tube L483",
+    line: { line_id: "1", role: "clothes_tube", quantity: 1, l: 483 },
+    expectedCode: "0TS1300",
+    expectedUnitMelamine: 226,
+    expectAccuracy: "exact",
+  },
+  {
+    id: "T25",
+    pdfRef: "p.35 hanging drawer H L803 variant 3",
+    line: {
+      line_id: "1",
+      role: "hanging_drawer",
+      quantity: 1,
+      l: 803,
+      drawer_variant: "3",
+    },
+    expectedCode: "5C31630",
+    expectedUnitMelamine: 437,
+    expectAccuracy: "exact",
+  },
+  {
+    id: "T26",
+    pdfRef: "p.41 simple drawer J H222 L483 wood",
+    line: {
+      line_id: "1",
+      role: "hanging_drawer_simple",
+      quantity: 1,
+      h: 222,
+      l: 483,
+      drawer_material: "wood",
+    },
+    expectedCode: "5CL1330",
+    expectedUnitMelamine: 174,
+    expectAccuracy: "exact",
+  },
+  {
+    id: "T27",
+    pdfRef: "p.42 raster rested H414 L483",
+    line: {
+      line_id: "1",
+      role: "hanging_raster",
+      quantity: 1,
+      h: 414,
+      l: 483,
+      raster_variant: "rested",
+      depth_type: "510",
+    },
+    expectedCode: "3CV2370",
+    expectedUnitMelamine: 383,
+    expectAccuracy: "exact",
+  },
+  {
+    id: "T28",
+    pdfRef: "p.53 custom panel min 0.5 m2",
+    line: { line_id: "1", role: "custom_panel_sqm", quantity: 1, h: 400, l: 500 },
+    expectedCode: "4NP1010",
+    expectAccuracy: "estimated",
+  },
+  {
+    id: "T29",
+    pdfRef: "cuts: shelf L640 panel basis -> 643 + TALARI",
+    line: { line_id: "1", role: "shelf", quantity: 1, l: 640, depth_type: "510" },
+    expectedCode: "1RL1510",
+    expectedUnitMelamine: 77,
+    expectAccuracy: "estimated",
+    basis: "panel",
+  },
+  {
+    id: "T30",
+    pdfRef: "Muretti: shelf L650 -> stock 803 + TALARI",
+    line: { line_id: "1", role: "shelf", quantity: 1, l: 650, depth_type: "510" },
+    expectedCode: "1RL1610",
+    expectedUnitMelamine: 85,
+    expectAccuracy: "estimated",
   },
 ];
 
@@ -231,9 +328,13 @@ function run() {
       req([c.line], {
         system: c.system,
         finish: c.finish,
+        basis: c.basis,
       }),
     );
-    const row = estimate.lines[0];
+    const row =
+      estimate.lines.find((l) => l.line_id === c.line.line_id && l.line_kind !== "surcharge") ??
+      estimate.lines.find((l) => l.line_kind !== "surcharge") ??
+      estimate.lines[0];
     const finish = c.finish ?? "melamine";
     const expectedPrice =
       finish === "lacquered" ? c.expectedUnitLacquered : c.expectedUnitMelamine;
@@ -242,7 +343,24 @@ function run() {
     const priceOk = expectedPrice === undefined || row.unit_price === expectedPrice;
     const accOk = !c.expectAccuracy || row.accuracy === c.expectAccuracy;
 
-    if (codeOk && priceOk && accOk) {
+    const surchargeLines = estimate.lines.filter(
+      (l) => l.parent_line_id === c.line.line_id && l.line_kind === "surcharge",
+    );
+    let cutOk = true;
+    if (c.id === "T30") {
+      cutOk =
+        surchargeLines.length === 1 &&
+        surchargeLines[0].code === "TALARI" &&
+        surchargeLines[0].line_total === 29;
+    }
+    if (c.id === "T29") {
+      cutOk =
+        surchargeLines.length === 1 &&
+        surchargeLines[0].code === "TALARI" &&
+        surchargeLines[0].line_total === 29;
+    }
+
+    if (codeOk && priceOk && accOk && cutOk) {
       passed++;
       console.log(`PASS ${c.id} ${c.pdfRef}`);
     } else {
@@ -252,6 +370,7 @@ function run() {
         `  code: ${row.code} (expected ${c.expectedCode})`,
         `  price: ${row.unit_price} (expected ${expectedPrice})`,
         `  accuracy: ${row.accuracy} (expected ${c.expectAccuracy ?? "any"})`,
+        !cutOk ? `  cuts: ${surchargeLines.map((s) => s.code).join(",") || "none"}` : "",
       ].join("\n");
       failures.push(msg);
       console.log(msg);
@@ -266,7 +385,7 @@ function run() {
     { line_id: "L4", role: "footboard", quantity: 1, l: 950 },
   ];
   const templateEst = buildEstimate(req(templateLines));
-  const expectedTotal = 168 + 143 + 308 + 152; // 771
+  const expectedTotal = 168 + 143 + 308 + 152; // L3 shelf 640 finished -> 643 exact, no cut
   if (templateEst.total_net === expectedTotal) {
     passed++;
     console.log(`PASS T21 sample template total ${expectedTotal} EUR`);

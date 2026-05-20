@@ -8,13 +8,19 @@
     "start": "next start",
     "lint": "eslint",
     "test:pdf": "npx tsx scripts/validate-pdf-prices.ts",
-    "test:csv": "npx tsx scripts/validate-csv-template.ts"
+    "test:csv": "npx tsx scripts/validate-csv-template.ts",
+    "test:cad": "npx tsx scripts/validate-scene-to-estimate.ts"
   },
   "dependencies": {
     "@react-pdf/renderer": "^4.5.1",
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.6.1",
+    "@tanstack/react-table": "^8.21.3",
     "next": "16.2.6",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "three": "0.182.0",
+    "zustand": "^5.0.13"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

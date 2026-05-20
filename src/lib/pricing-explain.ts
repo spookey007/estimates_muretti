@@ -14,9 +14,8 @@ export function explainSnap(
 
   if (role === "shelf" && dimension === "width") {
     return (
-      `Shelf width ${input} mm ? catalog ${resolved} mm. SCENIKA shelf lengths are ` +
-      `${RULES.widthsShelf.join(", ")} mm (bay +3 mm vs panels 480/640/800/900). ` +
-      `Enter ${resolved} in width_mm for an exact match.`
+      `Customer width ${input} mm -> order stock ${resolved} mm (catalog ${RULES.widthsShelf.join(", ")}). ` +
+      `Charged at ${resolved} mm price + cut surcharge (PDF p.52, e.g. TALARI).`
     );
   }
 

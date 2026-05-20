@@ -1,6 +1,7 @@
 "use client";
 
 import { EstimateEditor } from "@/components/EstimateEditor";
+import { createBlankRequest } from "@/lib/blank-estimate";
 import { buildEstimate } from "@/lib/engine/price";
 import { parseCsvRequest } from "@/lib/parsers/parse-request";
 import type { EstimateRequest, EstimateResponse } from "@/lib/types";
@@ -16,7 +17,7 @@ export default function Home() {
     if (!request) return null;
     try {
       return buildEstimate(request);
-    } catch (e) {
+    } catch {
       return null;
     }
   }, [request]);
@@ -32,7 +33,6 @@ export default function Home() {
     }
     setLoading(true);
     setError(null);
-    setRequest(null);
     try {
       const text = await file.text();
       const parsed = parseCsvRequest(text, { price_list_id: "scenika-2023-10" });
@@ -43,6 +43,12 @@ export default function Home() {
       setLoading(false);
     }
   }, [file]);
+
+  const startBlank = useCallback(() => {
+    setError(null);
+    setFile(null);
+    setRequest(createBlankRequest());
+  }, []);
 
   const [pdfLoading, setPdfLoading] = useState(false);
   const [guideLoading, setGuideLoading] = useState(false);
@@ -76,26 +82,27 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-stone-50 text-stone-900">
+    <div className="min-h-screen bg-stone-50 text-stone-900">
       <header className="border-b border-stone-200 bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 sm:py-8">
+        <div className="mx-auto max-w-[min(100%,1920px)] px-4 py-6 sm:px-6 sm:py-8">
           <p className="text-xs font-medium uppercase tracking-wider text-amber-800 sm:text-sm">
             Muretti Estimate
           </p>
           <h1 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">
-            SCENIKA pricing (CSV)
+            SCENIKA pricing
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-stone-600">
-            Upload your CSV, then edit any row. Totals and catalog codes update
-            instantly from the SCENIKA 10/2023 list.
+            Upload a CSV or start a blank estimate and add shelves, panels, and
+            other parts with qty, dimensions, finish, and notes — same fields as
+            the template.
           </p>
         </div>
       </header>
-      <main className="mx-auto w-full max-w-7xl min-w-0 px-4 py-6 sm:px-6 sm:py-10">
+      <main className="mx-auto w-full max-w-[min(100%,1920px)] min-w-0 px-4 py-6 sm:px-6 sm:py-10">
         <section className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm sm:p-6">
-          <h2 className="text-lg font-medium">Upload CSV</h2>
+          <h2 className="text-lg font-medium">Get started</h2>
           <p className="mt-1 text-sm text-stone-500">
-            Settings and item rows are read from your CSV file.
+            Load an existing CSV or build line by line without a file.
           </p>
           <div className="mt-4 flex flex-col gap-3 sm:mt-6">
             <input
@@ -111,7 +118,14 @@ export default function Home() {
                 disabled={loading || !file}
                 className="w-full rounded-lg bg-stone-900 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50 sm:w-auto"
               >
-                {loading ? "Loading..." : "Load & calculate"}
+                {loading ? "Loading..." : "Load CSV & calculate"}
+              </button>
+              <button
+                type="button"
+                onClick={startBlank}
+                className="w-full rounded-lg border border-amber-400 bg-amber-50 px-5 py-2.5 text-sm font-medium text-amber-950 hover:bg-amber-100 sm:w-auto"
+              >
+                Start blank estimate
               </button>
               <a
                 href="/api/template"
@@ -136,8 +150,9 @@ export default function Home() {
             </div>
           </div>
           <p className="mt-4 text-xs text-stone-500">
-            New to the template? Download the column guide PDF for every field, role, and
-            standard SCENIKA size.
+            Per-line <strong>finish</strong> overrides the project default when set.
+            Shelf widths like 650 mm snap to 803 mm catalog stock plus cut surcharge
+            (TALARI).
           </p>
           {error && (
             <p className="mt-4 rounded-lg bg-red-50 p-3 text-sm text-red-800 break-words">
@@ -153,6 +168,11 @@ export default function Home() {
             onDownloadPdf={downloadPdf}
             pdfLoading={pdfLoading}
           />
+        )}
+        {request && !result && (
+          <p className="mt-6 rounded-lg bg-red-50 p-4 text-sm text-red-800">
+            Could not price this estimate. Check settings and line dimensions.
+          </p>
         )}
       </main>
     </div>
