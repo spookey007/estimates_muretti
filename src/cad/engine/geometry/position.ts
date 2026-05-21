@@ -19,9 +19,16 @@ export function spawnPositionAtCorner(
   return [ox + stagger, oy, oz + stagger];
 }
 
+/** World-space AABB center (accounts for Y rotation used on return-wall parts). */
 export function worldCenterFromObject(obj: SceneObject): Vec3 {
   const { width, height, depth } = obj.dimensions;
   const [x, y, z] = obj.position;
+  const ry = obj.rotation[1] ?? 0;
+  const yTurn = Math.abs(ry % Math.PI) > 0.1;
+
+  if (yTurn) {
+    return [x + depth / 2, y + height / 2, z + width / 2];
+  }
   return [x + width / 2, y + height / 2, z + depth / 2];
 }
 
@@ -29,11 +36,13 @@ export function positionFromWorldCenter(
   type: SceneObjectType,
   centerMm: Vec3,
   dimensions: { width: number; height: number; depth: number },
+  rotation: Vec3 = [0, 0, 0],
 ): Vec3 {
   const { width, height, depth } = dimensions;
-  let x = centerMm[0] - width / 2;
+  const yTurn = Math.abs((rotation[1] ?? 0) % Math.PI) > 0.1;
+  let x = centerMm[0] - (yTurn ? depth : width) / 2;
   let y = centerMm[1] - height / 2;
-  let z = centerMm[2] - depth / 2;
+  let z = centerMm[2] - (yTurn ? width : depth) / 2;
   return constrainPosition(type, [x, y, z]);
 }
 

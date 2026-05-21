@@ -1,3 +1,9 @@
+import { panelCatalogLengthMm } from "@/cad/engine/geometry/panel-dimensions";
+import {
+  shelfCatalogLMm,
+  shelfDepthTypeFromIntoRoom,
+  shelfIntoRoomMm,
+} from "@/cad/engine/geometry/shelf-dimensions";
 import type { Scene, SceneObject } from "@/cad/types";
 import { DEFAULT_SCENE_SETTINGS } from "@/cad/types";
 import type { EstimateLineInput, EstimateRequest } from "@/lib/types";
@@ -26,16 +32,23 @@ function sceneObjectToLine(obj: SceneObject, index: number): EstimateLineInput {
     case "corner_upright":
       return { ...base, h: height || 2187 };
     case "shelf":
-    case "shoe_rack":
+    case "shoe_rack": {
+      const intoRoom = shelfIntoRoomMm(obj);
       return {
         ...base,
-        l: width,
-        depth_type: obj.pricing.depth_type ?? (depth >= 414 && depth < 510 ? "414" : "510"),
+        l: shelfCatalogLMm(obj),
+        depth_type:
+          obj.pricing.depth_type ?? shelfDepthTypeFromIntoRoom(intoRoom),
       };
+    }
     case "back_panel":
     case "mirror":
     case "linear_filler":
-      return { ...base, h: height || 2187, l: width };
+      return {
+        ...base,
+        h: height || 2187,
+        l: panelCatalogLengthMm({ width, depth }),
+      };
     case "footboard":
       return { ...base, l: width };
     case "hanging_drawer":
@@ -58,9 +71,26 @@ function sceneObjectToLine(obj: SceneObject, index: number): EstimateLineInput {
   }
 }
 
+function mergeLinesByLineId(lines: EstimateLineInput[]): EstimateLineInput[] {
+  const byId = new Map<string, EstimateLineInput>();
+  for (const line of lines) {
+    const existing = byId.get(line.line_id);
+    if (!existing) {
+      byId.set(line.line_id, { ...line });
+      continue;
+    }
+    byId.set(line.line_id, {
+      ...existing,
+      quantity: (existing.quantity ?? 1) + (line.quantity ?? 1),
+    });
+  }
+  return Array.from(byId.values());
+}
+
 export function sceneToEstimate(scene: Scene): EstimateRequest {
   const settings = { ...DEFAULT_SCENE_SETTINGS, ...scene.settings };
-  const lines = scene.objects.map((o, i) => sceneObjectToLine(o, i));
+  const raw = scene.objects.map((o, i) => sceneObjectToLine(o, i));
+  const lines = mergeLinesByLineId(raw);
 
   return {
     schema_version: "1.0",

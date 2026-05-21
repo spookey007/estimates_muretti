@@ -17,13 +17,15 @@ export function createLClosetScenikaRequest(): EstimateRequest {
   };
 }
 
-/** Full L-closet like the SCENIKA technical sheet (900×3 + return bays). */
+/** Full L-closet like the SCENIKA technical sheet (900×3 + return bays + all parts). */
 export function createLClosetScenikaScene(): Scene {
-  const scene = estimateToScene(createLClosetScenikaRequest());
+  const scene = estimateToScene(createLClosetScenikaRequest(), {
+    showComponents: true,
+  });
   return {
     ...scene,
-    id: "l-closet-scenika",
-    name: "L-Shaped Walk-In (SCENIKA sample)",
-    templateId: "l-closet-scenika",
+    id: "l-closet-standard",
+    name: "L-Shaped Walk-In (with components)",
+    templateId: "l-closet-standard",
   };
 }

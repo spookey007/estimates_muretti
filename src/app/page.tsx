@@ -1,6 +1,8 @@
 "use client";
 
+import { AuthBar } from "@/components/AuthBar";
 import { EstimateEditor } from "@/components/EstimateEditor";
+import { DesignPdfImport } from "@/components/import/DesignPdfImport";
 import { createBlankRequest } from "@/lib/blank-estimate";
 import { buildEstimate } from "@/lib/engine/price";
 import { parseCsvRequest } from "@/lib/parsers/parse-request";
@@ -84,7 +86,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900">
       <header className="border-b border-stone-200 bg-white">
-        <div className="mx-auto max-w-[min(100%,1920px)] px-4 py-6 sm:px-6 sm:py-8">
+        <div className="mx-auto flex max-w-[min(100%,1920px)] flex-wrap items-start gap-4 px-4 py-6 sm:px-6 sm:py-8">
+          <div className="min-w-0 flex-1">
           <p className="text-xs font-medium uppercase tracking-wider text-amber-800 sm:text-sm">
             Muretti Estimate
           </p>
@@ -92,10 +95,12 @@ export default function Home() {
             SCENIKA pricing
           </h1>
           <p className="mt-2 max-w-2xl text-sm text-stone-600">
-            Upload a CSV or start a blank estimate and add shelves, panels, and
-            other parts with qty, dimensions, finish, and notes — same fields as
-            the template.
+            Upload a CSV, import a customer design PDF with AI, or start a blank
+            estimate and add shelves, panels, and other parts — same fields as the
+            template.
           </p>
+          </div>
+          <AuthBar />
         </div>
       </header>
       <main className="mx-auto w-full max-w-[min(100%,1920px)] min-w-0 px-4 py-6 sm:px-6 sm:py-10">
@@ -159,6 +164,15 @@ export default function Home() {
               {error}
             </p>
           )}
+
+          <DesignPdfImport
+            onImported={(req) => {
+              setError(null);
+              setFile(null);
+              setRequest(req);
+            }}
+            onError={(msg) => setError(msg)}
+          />
         </section>
         {request && result && (
           <EstimateEditor

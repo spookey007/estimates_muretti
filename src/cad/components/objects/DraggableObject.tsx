@@ -63,7 +63,12 @@ export function DraggableObject({ object }: { object: SceneObject }) {
       p.y / MM_PER_UNIT,
       p.z / MM_PER_UNIT,
     ];
-    const next = positionFromWorldCenter(object.type, centerMm, object.dimensions);
+    const next = positionFromWorldCenter(
+      object.type,
+      centerMm,
+      object.dimensions,
+      object.rotation,
+    );
     setObjectPosition(object.id, next);
   }, [object, setObjectPosition, setObjectRotation]);
 

@@ -90,6 +90,24 @@ export function markScenePushedToEstimate(lines: EstimateRequest["lines"]) {
   useSceneStore.setState({ lastPushedFingerprint: fp });
 }
 
+/** Request to apply when loading a preset (lines from sample, settings from scene). */
+export function requestFromPreset(
+  base: EstimateRequest,
+  scene = useSceneStore.getState().scene,
+): EstimateRequest {
+  const s = scene.settings;
+  return {
+    ...base,
+    project_name: base.project_name,
+    measurement_unit: s.measurement_unit ?? base.measurement_unit,
+    measurement_basis: s.measurement_basis ?? base.measurement_basis,
+    system: s.system ?? base.system,
+    finish: s.finish ?? base.finish,
+    margin_percent: s.margin_percent ?? base.margin_percent,
+    lines: base.lines,
+  };
+}
+
 export function pushSceneToEstimateRequest(
   request: EstimateRequest,
 ): EstimateRequest {

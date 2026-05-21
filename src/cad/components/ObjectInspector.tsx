@@ -6,6 +6,18 @@ import {
 } from "@/components/estimate/EditableField";
 import { FinishSelect, RemoveLineButton } from "@/components/estimate/line-shared";
 import { CustomPricingDisplay } from "@/components/estimate/CustomPricingDisplay";
+import {
+  isReturnWallPanel,
+  panelCatalogLengthMm,
+  panelDimensionsFromCatalog,
+  panelRotationForWall,
+} from "@/cad/engine/geometry/panel-dimensions";
+import {
+  isReturnWallShelf,
+  shelfCatalogLMm,
+  shelfDimensionsFromCatalog,
+  shelfIntoRoomMm,
+} from "@/cad/engine/geometry/shelf-dimensions";
 import { rotationDegreesY, snapRotation } from "@/cad/engine/geometry/rotation";
 import { getLineCustomization } from "@/lib/line-customization";
 import { useSceneStore } from "@/cad/state/useSceneStore";
@@ -49,6 +61,8 @@ export function ObjectInspector({
   }
 
   const hints = placeholdersForRole(object.pricing.role);
+  const onReturnShelf =
+    object.type === "shelf" && isReturnWallShelf(object);
   const id = object.id;
   const custom = row ? getLineCustomization(row) : null;
 
@@ -121,17 +135,49 @@ export function ObjectInspector({
 
       <div className="grid grid-cols-2 gap-2">
         <label className="text-[10px] font-bold uppercase text-stone-500">
-          Width (mm)
+          {object.pricing.role === "back_panel"
+            ? "Panel width L (mm)"
+            : onReturnShelf
+              ? "Width L along wall (mm)"
+              : "Width (mm)"}
           <div className="mt-1">
             <EditableNumberInput
               lineId={`${id}-w`}
               compact
-              value={object.dimensions.width}
+              value={
+                object.pricing.role === "back_panel"
+                  ? panelCatalogLengthMm(object.dimensions)
+                  : onReturnShelf
+                    ? shelfCatalogLMm(object)
+                    : object.dimensions.width
+              }
               placeholder={hints.l ?? `e.g. ${SHELF_WIDTHS.join(", ")}`}
               {...getNumericFieldConfig(object.pricing.role, "l")}
               validate={(raw) => validateWidth(object.pricing.role, raw)}
               onCommit={(v) => {
                 if (v == null) return;
+                if (object.pricing.role === "back_panel") {
+                  const onReturn = isReturnWallPanel(object);
+                  updateObject(id, {
+                    dimensions: panelDimensionsFromCatalog(
+                      v,
+                      object.dimensions.height,
+                      onReturn,
+                    ),
+                    rotation: panelRotationForWall(onReturn),
+                  });
+                  return;
+                }
+                if (onReturnShelf) {
+                  updateObject(id, {
+                    dimensions: shelfDimensionsFromCatalog(
+                      v,
+                      shelfIntoRoomMm(object),
+                      true,
+                    ),
+                  });
+                  return;
+                }
                 updateObject(id, {
                   dimensions: { ...object.dimensions, width: v },
                 });
@@ -159,17 +205,35 @@ export function ObjectInspector({
           </div>
         </label>
         <label className="text-[10px] font-bold uppercase text-stone-500">
-          Depth (mm)
+          {onReturnShelf ? "Depth into room (mm)" : "Depth (mm)"}
           <div className="mt-1">
             <EditableNumberInput
               lineId={`${id}-d`}
               compact
-              value={object.dimensions.depth}
+              value={
+                onReturnShelf
+                  ? shelfIntoRoomMm(object)
+                  : object.dimensions.depth
+              }
               placeholder="510 or 414"
               {...getNumericFieldConfig(object.pricing.role, "d")}
               validate={(raw) => validateDepth(object.pricing.role, raw)}
               onCommit={(v) => {
                 if (v == null) return;
+                if (onReturnShelf) {
+                  updateObject(id, {
+                    dimensions: shelfDimensionsFromCatalog(
+                      shelfCatalogLMm(object),
+                      v,
+                      true,
+                    ),
+                    pricing: {
+                      ...object.pricing,
+                      depth_type: v === 414 ? "414" : "510",
+                    },
+                  });
+                  return;
+                }
                 updateObject(id, {
                   dimensions: { ...object.dimensions, depth: v },
                   pricing: {

@@ -1,6 +1,10 @@
 import type { SceneObject, SceneObjectType } from "@/cad/types";
 import { constrainPosition } from "@/cad/engine/geometry/position";
 import {
+  shelfDepthTypeFromIntoRoom,
+  shelfIntoRoomMm,
+} from "@/cad/engine/geometry/shelf-dimensions";
+import {
   SHELF_WIDTHS,
   UPRIGHT_HEIGHTS,
 } from "@/lib/dimension-limits";
@@ -45,6 +49,8 @@ export function snapDimensions(
 
 export function applyDimensionSnaps(obj: SceneObject): SceneObject {
   const dimensions = snapDimensions(obj.type, obj.dimensions);
+  const intoRoom =
+    obj.type === "shelf" ? shelfIntoRoomMm({ ...obj, dimensions }) : 510;
   return {
     ...obj,
     dimensions,
@@ -52,9 +58,7 @@ export function applyDimensionSnaps(obj: SceneObject): SceneObject {
       ...obj.pricing,
       depth_type:
         obj.type === "shelf"
-          ? dimensions.depth === 414
-            ? "414"
-            : "510"
+          ? shelfDepthTypeFromIntoRoom(intoRoom)
           : obj.pricing.depth_type,
     },
   };

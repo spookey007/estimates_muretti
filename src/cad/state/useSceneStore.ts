@@ -10,7 +10,13 @@ import {
 } from "@/cad/engine/snapping/snap";
 import { constrainPosition } from "@/cad/engine/geometry/position";
 import { snapRotation } from "@/cad/engine/geometry/rotation";
-import { loadPreset, type PresetId } from "@/cad/presets";
+import {
+  loadPreset,
+  type LegacyPresetId,
+  type PresetId,
+} from "@/cad/presets";
+import { createLClosetPanelsOnlyRequest } from "@/cad/presets/l-closet-panels-only";
+import { createLClosetScenikaRequest } from "@/cad/presets/l-closet-scenika";
 import type { Scene, SceneObject, SceneObjectType, SceneSettings, Vec3 } from "@/cad/types";
 import { DEFAULT_SCENE_SETTINGS } from "@/cad/types";
 import { nextLineId } from "@/lib/blank-estimate";
@@ -41,7 +47,7 @@ type SceneStore = {
   importFromEstimate: (request: EstimateRequest) => void;
   setTransformDragging: (v: boolean) => void;
   setCameraView: (v: "top" | "perspective") => void;
-  loadPreset: (id: PresetId) => void;
+  loadPreset: (id: PresetId | LegacyPresetId) => void;
   updateSettings: (patch: Partial<SceneSettings>) => void;
   setSceneName: (name: string) => void;
 
@@ -178,7 +184,9 @@ export const useSceneStore = create<SceneStore>((set, get) => ({
 
   importFromEstimate: (request) =>
     set({
-      scene: estimateToScene(request),
+      scene: estimateToScene(request, {
+        showComponents: request.lines.length > 10,
+      }),
       selectedId: undefined,
       gizmoMode: null,
       transformDragging: false,
@@ -191,7 +199,14 @@ export const useSceneStore = create<SceneStore>((set, get) => ({
 
   loadPreset: (id) => {
     const scene = loadPreset(id);
-    const request = sceneToEstimate(scene);
+    const request =
+      id === "l-closet-standard" ||
+      id === "l-closet-with-components" ||
+      id === "l-closet-scenika"
+        ? createLClosetScenikaRequest()
+        : id === "l-closet-panels-only"
+          ? createLClosetPanelsOnlyRequest()
+          : sceneToEstimate(scene);
     set({
       scene,
       selectedId: undefined,

@@ -4,16 +4,21 @@ import { CADCanvas } from "@/cad/components/CADCanvas";
 import { CADInteractionHelp } from "@/cad/components/CADInteractionHelp";
 import { CADTransformToolbar } from "@/cad/components/CADTransformToolbar";
 import { ObjectInspector } from "@/cad/components/ObjectInspector";
+import { sceneToEstimate } from "@/cad/engine/scene/sceneToEstimate";
 import {
   markScenePushedToEstimate,
   pushSceneToEstimateRequest,
+  requestFromPreset,
 } from "@/cad/hooks/use-estimate-scene-sync";
 import { useCadKeyboard } from "@/cad/hooks/use-cad-keyboard";
 import { useSceneStore } from "@/cad/state/useSceneStore";
 import type { PresetId } from "@/cad/presets";
+import { createLClosetPanelsOnlyRequest } from "@/cad/presets/l-closet-panels-only";
+import { createLClosetScenikaRequest } from "@/cad/presets/l-closet-scenika";
 import { mergeRows } from "@/components/estimate/line-shared";
 import type { EstimateRequest, EstimateResponse } from "@/lib/types";
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import type { Scene } from "@/cad/types";
 
 export function CADEditor({
   request,
@@ -35,8 +40,24 @@ export function CADEditor({
   useCadKeyboard(true);
 
   const initDone = useRef(false);
+  const skipScenePushRef = useRef(false);
   const onRequestChangeRef = useRef(onRequestChange);
   onRequestChangeRef.current = onRequestChange;
+
+  const [activePreset, setActivePreset] = useState<PresetId>("l-closet-standard");
+
+  function presetIdFromScene(s: Scene): PresetId {
+    const t = s.templateId;
+    if (t === "l-closet-standard" || t === "l-closet-scenika") return "l-closet-standard";
+    if (t === "l-closet-panels-only") return "l-closet-panels-only";
+    if (s.id === "starter-run" || t === "starter-run") return "starter-run";
+    if (s.objects.length === 0) return "empty";
+    return "l-closet-standard";
+  }
+
+  useEffect(() => {
+    setActivePreset(presetIdFromScene(scene));
+  }, [scene.templateId, scene.id, scene.objects.length]);
 
   const sceneObjectsKey = useMemo(
     () =>
@@ -59,14 +80,19 @@ export function CADEditor({
     if (initDone.current) return;
     initDone.current = true;
     if (request.lines.length === 0 && scene.objects.length === 0) {
-      loadPreset("l-closet-scenika");
-      const merged = pushSceneToEstimateRequest(request);
-      markScenePushedToEstimate(merged.lines);
-      onRequestChangeRef.current(merged);
+      loadPreset("l-closet-standard");
+      skipScenePushRef.current = true;
+      const next = requestFromPreset(createLClosetScenikaRequest());
+      markScenePushedToEstimate(next.lines);
+      onRequestChangeRef.current(next);
     }
   }, [request, scene.objects.length, loadPreset]);
 
   useEffect(() => {
+    if (skipScenePushRef.current) {
+      skipScenePushRef.current = false;
+      return;
+    }
     if (scene.objects.length === 0 && request.lines.length > 0) {
       return;
     }
@@ -92,10 +118,23 @@ export function CADEditor({
   });
 
   const handleLoadPreset = (id: PresetId) => {
+    setActivePreset(id);
     loadPreset(id);
-    const merged = pushSceneToEstimateRequest(request);
-    markScenePushedToEstimate(merged.lines);
-    onRequestChangeRef.current(merged);
+    skipScenePushRef.current = true;
+
+    let next: EstimateRequest;
+    if (id === "l-closet-standard") {
+      next = requestFromPreset(createLClosetScenikaRequest());
+    } else if (id === "l-closet-panels-only") {
+      next = requestFromPreset(createLClosetPanelsOnlyRequest());
+    } else if (id === "empty") {
+      next = { ...request, project_name: "New closet (CAD)", lines: [] };
+    } else {
+      next = sceneToEstimate(useSceneStore.getState().scene);
+    }
+
+    markScenePushedToEstimate(next.lines);
+    onRequestChangeRef.current(next);
   };
 
   return (
@@ -103,9 +142,8 @@ export function CADEditor({
       <div className="border-b border-stone-200 px-4 py-3 sm:px-5">
         <h3 className="text-base font-semibold text-stone-900">3D closet CAD</h3>
         <p className="mt-1 text-xs text-stone-600">
-          L-shaped SCENIKA sample loads by default. Click to inspect · double-click to
-          move/rotate (uses Move/Rotate mode) · scroll to orbit without losing
-          selection.
+          With components = panels, uprights, and shelves in 3D (corner posts and
+          mirror stay in the estimate only). Panels only = six back panels.
         </p>
       </div>
 
@@ -132,18 +170,12 @@ export function CADEditor({
           + Panel (C)
         </button>
         <select
-          className="rounded-lg border border-stone-200 bg-white px-2 py-1.5 text-xs"
-          defaultValue=""
-          onChange={(e) => {
-            const v = e.target.value as PresetId | "";
-            if (v) {
-              handleLoadPreset(v);
-              e.target.value = "";
-            }
-          }}
+          className="rounded-lg border border-stone-200 bg-white px-2 py-1.5 text-xs font-medium"
+          value={activePreset}
+          onChange={(e) => handleLoadPreset(e.target.value as PresetId)}
         >
-          <option value="">Load preset…</option>
-          <option value="l-closet-scenika">L-closet SCENIKA sample</option>
+          <option value="l-closet-standard">L-shape — with components</option>
+          <option value="l-closet-panels-only">L-shape — panels only</option>
           <option value="starter-run">Starter: 2 uprights + shelf</option>
           <option value="empty">Empty scene</option>
         </select>
@@ -164,7 +196,7 @@ export function CADEditor({
           </button>
         )}
         <span className="ml-auto text-xs text-stone-500">
-          {scene.objects.length} parts · {request.lines.length} priced lines
+          {scene.name} · {scene.objects.length} parts · {request.lines.length} lines
         </span>
       </div>
 

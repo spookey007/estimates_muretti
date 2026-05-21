@@ -2,10 +2,11 @@ import { buildEstimate } from "@/lib/engine/price";
 import { parseCsvRequest } from "@/lib/parsers/parse-request";
 import type { EstimateRequest } from "@/lib/types";
 import { NextResponse } from "next/server";
+import { withSecureApi } from "@/lib/api/secure-route";
 
 export const runtime = "nodejs";
 
-export async function POST(req: Request) {
+export const POST = withSecureApi(async (req) => {
   try {
     const contentType = req.headers.get("content-type") || "";
     let request: EstimateRequest;
@@ -76,4 +77,4 @@ export async function POST(req: Request) {
     const message = e instanceof Error ? e.message : "Estimate failed";
     return NextResponse.json({ error: message }, { status: 400 });
   }
-}
+});

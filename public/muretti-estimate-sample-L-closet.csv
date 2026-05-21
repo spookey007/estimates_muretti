@@ -16,8 +16,8 @@ L09,Wall 2 - return run,back_panel,1,2187,480,,,,C Schienale bay 480mm
 L10,Wall 1 - left run,shelf,2,,900,,,510,F Ripiano upper bay 1-2
 L11,Wall 1 - left run,shelf,2,,900,,,510,F Ripiano lower bay 1-2
 L12,Wall 1 - left run,shelf,2,,900,,,510,F Ripiano bay 3
-L13,Wall 2 - return run,shelf,2,,800,,,510,F Ripiano 800mm bays
-L14,Wall 2 - return run,shelf,2,,640,,,510,F Ripiano 640mm bay
+L13,Wall 2 - return run,shelf,2,,480,,,510,F Ripiano 800mm bay (480 L uniform)
+L14,Wall 2 - return run,shelf,2,,480,,,510,F Ripiano 640mm bay (480 L uniform)
 L15,Wall 2 - return run,shelf,1,,480,,,510,F Ripiano 480mm bay
 L16,Dressing area,mirror,1,958,638,,,,E Specchio on 640 bay (H958 L638)
 L17,Perimeter,footboard,1,,2724,,,,G Pedana - total wall length approx
