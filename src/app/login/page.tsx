@@ -85,7 +85,7 @@ function LoginForm() {
       />
 
       <div className="relative mb-8 flex flex-col items-center text-center">
-        <MurettiLogo size="lg" tone="dark" priority />
+        <MurettiLogo size="lg" priority />
       </div>
 
       <div className="relative panel w-full max-w-md border-white/10 bg-white p-8 sm:p-9">
