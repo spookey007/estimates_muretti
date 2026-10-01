@@ -1,7 +1,3 @@
-"use client";
-
-import Image from "next/image";
-
 type LogoSize = "sm" | "md" | "lg";
 
 const sizeClass: Record<LogoSize, string> = {
@@ -10,24 +6,28 @@ const sizeClass: Record<LogoSize, string> = {
   lg: "h-10 w-auto max-w-[220px] sm:h-11 sm:max-w-[260px]",
 };
 
-/** Local brand mark from `public/muretti-logo.jpg`. */
+/**
+ * Official Muretti mark from local `public/muretti-logo.png`.
+ * Uses a plain <img> so production does not depend on /_next/image optimization.
+ */
 export function MurettiLogo({
   size = "md",
   className = "",
-  priority = false,
 }: {
   size?: LogoSize;
   className?: string;
+  /** Kept for call-site compatibility; unused with plain img. */
   priority?: boolean;
 }) {
   return (
     <span className={`inline-flex items-center ${className}`}>
-      <Image
-        src="/muretti-logo.jpg"
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src="/muretti-logo.png"
         alt="Muretti"
         width={307}
         height={66}
-        priority={priority}
+        decoding="async"
         className={`${sizeClass[size]} object-contain object-left`}
       />
     </span>
