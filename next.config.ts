@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   transpilePackages: ["@react-pdf/renderer"],
+  images: {
+    // Avoid /_next/image 400s for local assets (esp. AVIF) on some hosts
+    unoptimized: true,
+  },
   async headers() {
     return [
       {
