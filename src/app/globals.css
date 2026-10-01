@@ -8,8 +8,9 @@
   --border: #d5dde6;
   --primary: #0f2744;
   --primary-hover: #16355c;
-  --accent: #1a6b5c;
-  --accent-soft: #e8f3f0;
+  --accent: #e8917a;
+  --accent-soft: #fdf1ed;
+  --brand-ink: #0b0f14;
   --danger: #b42318;
   --danger-soft: #fef3f2;
   --warn: #9a6700;
@@ -119,7 +120,7 @@ input.number-input-no-spin::-webkit-inner-spin-button {
   justify-content: center;
   border-radius: 0.5rem;
   background: var(--accent);
-  color: #fff;
+  color: #1a1210;
   padding: 0.625rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 600;
@@ -127,7 +128,7 @@ input.number-input-no-spin::-webkit-inner-spin-button {
 }
 
 .btn-accent:hover:not(:disabled) {
-  background: #155a4e;
+  background: #df7f64;
 }
 
 .btn-accent:disabled {

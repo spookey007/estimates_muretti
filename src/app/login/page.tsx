@@ -68,19 +68,27 @@ function LoginForm() {
 
   if (checkingSession) {
     return (
-      <main className="flex min-h-full items-center justify-center bg-[var(--background)]">
-        <p className="text-sm text-[var(--muted)]">Checking session…</p>
+        <main className="flex min-h-full items-center justify-center bg-[var(--brand-ink)]">
+        <p className="text-sm text-white/60">Checking session…</p>
       </main>
     );
   }
 
   return (
-    <main className="flex min-h-full flex-col items-center justify-center bg-[var(--background)] px-4 py-12">
-      <div className="mb-8 flex flex-col items-center text-center">
-        <MurettiLogo size="lg" priority />
+    <main className="relative flex min-h-full flex-col items-center justify-center overflow-hidden bg-[var(--brand-ink)] px-4 py-12">
+      <div
+        className="pointer-events-none absolute inset-0 opacity-40"
+        style={{
+          background:
+            "radial-gradient(ellipse 80% 50% at 50% -10%, rgba(232,145,122,0.28), transparent 55%)",
+        }}
+      />
+
+      <div className="relative mb-8 flex flex-col items-center text-center">
+        <MurettiLogo size="lg" tone="dark" priority />
       </div>
 
-      <div className="panel w-full max-w-md p-8 sm:p-9">
+      <div className="relative panel w-full max-w-md border-white/10 bg-white p-8 sm:p-9">
         <div className="space-y-2 border-b border-[var(--border)] pb-6">
           <h1 className="text-2xl font-semibold tracking-tight text-[var(--foreground)]">
             Sign in
@@ -139,8 +147,8 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <main className="flex min-h-full items-center justify-center bg-[var(--background)]">
-          <p className="text-sm text-[var(--muted)]">Loading…</p>
+        <main className="flex min-h-full items-center justify-center bg-[var(--brand-ink)]">
+          <p className="text-sm text-white/60">Loading…</p>
         </main>
       }
     >
