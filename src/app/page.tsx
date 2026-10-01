@@ -151,20 +151,25 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
       <header className="sticky top-0 z-40 border-b border-[var(--border)] bg-[var(--surface)]/95 backdrop-blur">
-        <div className="mx-auto flex max-w-[min(100%,1920px)] items-center gap-4 px-3 py-3 sm:px-6">
-          <div className="min-w-0 flex-1">
-            <MurettiLogo priority />
-          </div>
+        <div className="mx-auto flex max-w-[min(100%,1920px)] items-center justify-between gap-4 px-3 py-3.5 sm:px-6">
+          <MurettiLogo size="sm" priority className="lg:hidden" />
+          <div className="hidden min-w-0 flex-1 lg:block" />
           <AuthBar />
         </div>
       </header>
 
       <main className="mx-auto w-full max-w-[min(100%,1920px)] min-w-0 px-3 py-4 sm:px-6 sm:py-6">
         <section className="panel overflow-visible">
-          <div className="grid gap-0 lg:grid-cols-[200px_minmax(0,1fr)]">
+          <div className="grid gap-0 lg:grid-cols-[220px_minmax(0,1fr)]">
             <aside className="border-b border-[var(--border)] bg-[#eef2f6]/80 lg:border-b-0 lg:border-r">
+              <div className="hidden border-b border-[var(--border)] bg-white px-5 py-6 lg:block">
+                <MurettiLogo size="md" />
+                <p className="mt-3 text-xs leading-relaxed text-[var(--muted)]">
+                  SCENIKA pricing workspace
+                </p>
+              </div>
               <nav
-                className="flex gap-1 overflow-x-auto p-2 lg:sticky lg:top-[3.25rem] lg:max-h-[calc(100vh-3.25rem)] lg:flex-col lg:overflow-y-auto"
+                className="flex gap-1 overflow-x-auto p-2 lg:sticky lg:top-[3.5rem] lg:max-h-[calc(100vh-3.5rem)] lg:flex-col lg:overflow-y-auto lg:p-3"
                 aria-label="Estimate methods"
               >
                 {sidebarItems

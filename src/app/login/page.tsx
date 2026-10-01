@@ -76,17 +76,22 @@ function LoginForm() {
 
   return (
     <main className="flex min-h-full flex-col items-center justify-center bg-[var(--background)] px-4 py-12">
-      <div className="panel w-full max-w-md p-8">
-        <MurettiLogo className="h-10 w-auto" priority />
-        <h1 className="mt-6 text-2xl font-semibold tracking-tight text-[var(--foreground)]">
-          Sign in
-        </h1>
-        <p className="mt-2 text-sm text-[var(--muted)]">
-          Access pricing and AI import tools for your account only.
-        </p>
+      <div className="mb-8 flex flex-col items-center text-center">
+        <MurettiLogo size="lg" priority />
+      </div>
 
-        <form onSubmit={onSubmit} className="mt-8 space-y-4">
-          <div>
+      <div className="panel w-full max-w-md p-8 sm:p-9">
+        <div className="space-y-2 border-b border-[var(--border)] pb-6">
+          <h1 className="text-2xl font-semibold tracking-tight text-[var(--foreground)]">
+            Sign in
+          </h1>
+          <p className="text-sm leading-relaxed text-[var(--muted)]">
+            Access pricing and AI import tools for your account only.
+          </p>
+        </div>
+
+        <form onSubmit={onSubmit} className="mt-6 space-y-5">
+          <div className="space-y-2">
             <label htmlFor="email" className="field-label">
               Email
             </label>
@@ -100,7 +105,7 @@ function LoginForm() {
               className="field-control"
             />
           </div>
-          <div>
+          <div className="space-y-2">
             <label htmlFor="password" className="field-label">
               Password
             </label>
