@@ -1,3 +1,5 @@
+import { MURETTI_LOGO_DATA_URI } from "@/components/muretti-logo-data";
+
 type LogoSize = "sm" | "md" | "lg";
 
 const sizeClass: Record<LogoSize, string> = {
@@ -7,8 +9,8 @@ const sizeClass: Record<LogoSize, string> = {
 };
 
 /**
- * Official Muretti mark from local `public/muretti-logo.png`.
- * Uses a plain <img> so production does not depend on /_next/image optimization.
+ * Official Muretti mark, inlined as a data URI so production never depends on
+ * static file serving for `/muretti-logo.png`.
  */
 export function MurettiLogo({
   size = "md",
@@ -16,14 +18,13 @@ export function MurettiLogo({
 }: {
   size?: LogoSize;
   className?: string;
-  /** Kept for call-site compatibility; unused with plain img. */
   priority?: boolean;
 }) {
   return (
     <span className={`inline-flex items-center ${className}`}>
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
-        src="/muretti-logo.png"
+        src={MURETTI_LOGO_DATA_URI}
         alt="Muretti"
         width={307}
         height={66}

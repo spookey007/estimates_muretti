@@ -17,6 +17,7 @@ function isPublicPath(pathname: string): boolean {
   if (PUBLIC_PATHS.has(pathname)) return true;
   if (pathname.startsWith("/_next/")) return true;
   if (pathname === "/favicon.ico") return true;
+  if (/\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico)$/i.test(pathname)) return true;
   return PUBLIC_API_PREFIXES.some((p) => pathname.startsWith(p));
 }
 
@@ -118,6 +119,6 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico)$).*)",
   ],
 };
