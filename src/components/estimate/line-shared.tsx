@@ -38,7 +38,7 @@ export const ROLES: LineRole[] = [
 ];
 
 export const INPUT =
-  "box-border w-full min-h-10 max-w-full rounded-md border border-stone-200 bg-white px-3 py-2.5 text-sm leading-normal text-stone-900 shadow-sm placeholder:text-stone-400 focus:border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500/25";
+  "box-border w-full min-h-10 max-w-full rounded-md border border-[#d5dde6] bg-white px-3 py-2.5 text-sm leading-normal text-[#1a2332] shadow-sm placeholder:text-[#8a97a6] focus:border-[#3d6a8c] focus:outline-none focus:ring-2 focus:ring-[#3d6a8c]/25";
 
 export const SELECT = `${INPUT} cursor-pointer pr-10 appearance-auto`;
 
@@ -49,7 +49,7 @@ export const TEXTAREA = `${INPUT} min-h-[5.5rem] resize-y whitespace-pre-wrap br
 export const TABLE_NATURAL_MIN_PX = 2208;
 
 export const INPUT_COMPACT =
-  "box-border w-full min-h-9 min-w-[4.5rem] rounded-md border border-stone-200 bg-white px-2 py-2 text-xs leading-normal text-stone-900 shadow-sm focus:border-amber-600 focus:outline-none focus:ring-2 focus:ring-amber-500/25";
+  "box-border w-full min-h-9 min-w-[4.5rem] rounded-md border border-[#d5dde6] bg-white px-2 py-2 text-xs leading-normal text-[#1a2332] shadow-sm focus:border-[#3d6a8c] focus:outline-none focus:ring-2 focus:ring-[#3d6a8c]/25";
 
 export const SELECT_COMPACT = `${INPUT_COMPACT} cursor-pointer pr-8 appearance-auto`;
 

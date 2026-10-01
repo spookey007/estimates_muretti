@@ -25,7 +25,7 @@ export function AuthBar() {
         type="button"
         onClick={signOut}
         disabled={loading}
-        className="rounded-lg border border-stone-300 px-3 py-1.5 text-xs font-medium text-stone-700 hover:bg-stone-100 disabled:opacity-50"
+        className="btn-secondary py-1.5 text-xs"
       >
         {loading ? "Signing out…" : "Sign out"}
       </button>

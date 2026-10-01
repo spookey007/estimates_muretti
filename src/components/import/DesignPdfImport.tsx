@@ -102,157 +102,151 @@ export function DesignPdfImport({
   ]);
 
   return (
-    <div className="mt-6 rounded-xl border border-violet-200 bg-violet-50/50 p-4 sm:p-6">
-      <h2 className="text-lg font-medium text-stone-900">
-        Import from design PDF (AI)
-      </h2>
-      <p className="mt-1 text-sm text-stone-600">
-        Upload a customer closet PDF. Claude extracts shelves, panels, uprights,
-        and other lines into the estimate table — review before quoting.
-      </p>
-
-      <div className="mt-4 rounded-lg border border-violet-100 bg-white/80 p-3">
-        <p className="text-xs font-medium text-stone-500">
-          System instructions (fixed, not editable)
-        </p>
-        <p className="mt-1 text-sm leading-relaxed text-stone-700">
-          {DESIGN_PDF_SYSTEM_PROMPT_SUMMARY}
+    <div className="max-w-2xl space-y-6">
+      <div className="space-y-2">
+        <h2 className="text-base font-semibold">Import from design PDF</h2>
+        <p className="text-sm leading-relaxed text-[var(--muted)]">
+          Upload a customer closet PDF. AI extracts lines into the estimate —
+          review before quoting.
         </p>
       </div>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <label className="block md:col-span-2">
-          <span className="text-xs font-medium text-stone-500">Design PDF</span>
-          <input
-            type="file"
-            accept=".pdf,application/pdf"
-            className="mt-1 w-full text-sm file:mr-3 file:rounded-md file:border-0 file:bg-white file:px-3 file:py-2"
-            onChange={(e) => setPdfFile(e.target.files?.[0] ?? null)}
-          />
-        </label>
+      <label className="block space-y-2">
+        <span className="field-label">Design PDF</span>
+        <input
+          type="file"
+          accept=".pdf,application/pdf"
+          className="field-control file:mr-3 file:rounded-md file:border-0 file:bg-[#eef2f6] file:px-3 file:py-1.5 file:text-sm file:font-medium"
+          onChange={(e) => setPdfFile(e.target.files?.[0] ?? null)}
+        />
+      </label>
 
-        <label className="block md:col-span-2">
-          <span className="text-xs font-medium text-stone-500">
-            Your notes (optional)
-          </span>
-          <textarea
-            value={userPrompt}
-            onChange={(e) => setUserPrompt(e.target.value)}
-            rows={3}
-            className="mt-1 w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm"
-            placeholder="e.g. Ignore master bath; dimensions are opening sizes; add margin 10%"
-          />
-        </label>
+      <label className="block space-y-2">
+        <span className="field-label">Notes for AI (optional)</span>
+        <textarea
+          value={userPrompt}
+          onChange={(e) => setUserPrompt(e.target.value)}
+          rows={3}
+          className="field-control min-h-[5rem] resize-y"
+          placeholder="e.g. Ignore master bath; dimensions are opening sizes"
+        />
+      </label>
 
-        <label className="block">
-          <span className="text-xs font-medium text-stone-500">
-            Project name (optional)
-          </span>
-          <input
-            type="text"
-            value={projectName}
-            onChange={(e) => setProjectName(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm"
-            placeholder="Auto from PDF if empty"
-          />
-        </label>
+      <details className="rounded-xl border border-[var(--border)] bg-[#f8fafc] px-4 py-3">
+        <summary className="cursor-pointer select-none text-sm font-medium text-[var(--foreground)]">
+          Project defaults & AI options
+        </summary>
+        <div className="mt-4 grid gap-4 sm:grid-cols-2">
+          <label className="block sm:col-span-2">
+            <span className="field-label">Project name (optional)</span>
+            <input
+              type="text"
+              value={projectName}
+              onChange={(e) => setProjectName(e.target.value)}
+              className="field-control"
+              placeholder="Auto from PDF if empty"
+            />
+          </label>
+          <label className="block">
+            <span className="field-label">Output units</span>
+            <select
+              value={measurementUnit}
+              onChange={(e) =>
+                setMeasurementUnit(e.target.value as "mm" | "cm" | "in")
+              }
+              className="field-control"
+            >
+              <option value="mm">mm (recommended)</option>
+              <option value="cm">cm</option>
+              <option value="in">in</option>
+            </select>
+          </label>
+          <label className="block">
+            <span className="field-label">Measurement basis</span>
+            <select
+              value={measurementBasis}
+              onChange={(e) =>
+                setMeasurementBasis(
+                  e.target.value as "finished" | "panel" | "opening",
+                )
+              }
+              className="field-control"
+            >
+              <option value="finished">Finished size</option>
+              <option value="panel">Panel size</option>
+              <option value="opening">Opening size</option>
+            </select>
+          </label>
+          <label className="block">
+            <span className="field-label">System</span>
+            <select
+              value={system}
+              onChange={(e) =>
+                setSystem(e.target.value as "with_panels" | "without_panels")
+              }
+              className="field-control"
+            >
+              <option value="with_panels">With panels</option>
+              <option value="without_panels">Without panels</option>
+            </select>
+          </label>
+          <label className="block">
+            <span className="field-label">Finish</span>
+            <select
+              value={finish}
+              onChange={(e) =>
+                setFinish(e.target.value as "melamine" | "lacquered")
+              }
+              className="field-control"
+            >
+              <option value="melamine">Melamine</option>
+              <option value="lacquered">Lacquered</option>
+            </select>
+          </label>
+        </div>
+        <details className="mt-3 border-t border-[var(--border)] pt-3">
+          <summary className="cursor-pointer select-none text-xs font-medium text-[var(--muted)]">
+            Fixed system instructions (read-only)
+          </summary>
+          <p className="mt-2 text-xs leading-relaxed text-[var(--muted)]">
+            {DESIGN_PDF_SYSTEM_PROMPT_SUMMARY}
+          </p>
+        </details>
+      </details>
 
-        <label className="block">
-          <span className="text-xs font-medium text-stone-500">Output units</span>
-          <select
-            value={measurementUnit}
-            onChange={(e) =>
-              setMeasurementUnit(e.target.value as "mm" | "cm" | "in")
-            }
-            className="mt-1 w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm"
-          >
-            <option value="mm">mm (recommended)</option>
-            <option value="cm">cm</option>
-            <option value="in">in</option>
-          </select>
-        </label>
-
-        <label className="block">
-          <span className="text-xs font-medium text-stone-500">Measurement basis</span>
-          <select
-            value={measurementBasis}
-            onChange={(e) =>
-              setMeasurementBasis(
-                e.target.value as "finished" | "panel" | "opening",
-              )
-            }
-            className="mt-1 w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm"
-          >
-            <option value="finished">finished</option>
-            <option value="panel">panel</option>
-            <option value="opening">opening</option>
-          </select>
-        </label>
-
-        <label className="block">
-          <span className="text-xs font-medium text-stone-500">System</span>
-          <select
-            value={system}
-            onChange={(e) =>
-              setSystem(e.target.value as "with_panels" | "without_panels")
-            }
-            className="mt-1 w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm"
-          >
-            <option value="with_panels">with_panels</option>
-            <option value="without_panels">without_panels</option>
-          </select>
-        </label>
-
-        <label className="block">
-          <span className="text-xs font-medium text-stone-500">Finish</span>
-          <select
-            value={finish}
-            onChange={(e) => setFinish(e.target.value as "melamine" | "lacquered")}
-            className="mt-1 w-full rounded-lg border border-stone-200 bg-white px-3 py-2 text-sm"
-          >
-            <option value="melamine">melamine</option>
-            <option value="lacquered">lacquered</option>
-          </select>
-        </label>
-      </div>
-
-      <div className="mt-4 flex flex-wrap items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3 pt-1">
         <button
           type="button"
           onClick={runImport}
           disabled={loading || !pdfFile}
-          className="rounded-lg bg-violet-700 px-5 py-2.5 text-sm font-medium text-white disabled:opacity-50"
+          className="btn-accent"
         >
           {loading ? "Analyzing PDF…" : "Import with AI"}
         </button>
-        <p className="text-xs text-stone-500">
+        <p className="text-xs text-[var(--muted)]">
           {aiConfigLabel ? (
-            <>
-              Configured in <code className="text-violet-900">.env</code>:{" "}
-              <code className="text-violet-900">{aiConfigLabel}</code>
-            </>
+            <>Model: {aiConfigLabel}</>
           ) : (
-            <>Loading AI config from server…</>
+            <>Loading AI config…</>
           )}
         </p>
       </div>
 
       {lastMeta && (
-        <div className="mt-4 rounded-lg border border-violet-100 bg-white p-3 text-sm text-stone-700">
+        <div className="rounded-xl border border-[var(--border)] bg-[#f8fafc] p-4 text-sm text-[var(--foreground)]">
           <p>
             Imported <strong>{lastMeta.request.lines.length}</strong> lines from{" "}
             <strong>{lastMeta.closets.length}</strong> closet
-            {lastMeta.closets.length === 1 ? "" : "s"} using{" "}
-            <strong>{lastMeta.model}</strong>
+            {lastMeta.closets.length === 1 ? "" : "s"}
             {lastMeta.usage && (
-              <span className="text-stone-500">
+              <span className="text-[var(--muted)]">
                 {" "}
                 ({lastMeta.usage.input_tokens + lastMeta.usage.output_tokens}{" "}
                 tokens)
               </span>
             )}
           </p>
-          <ul className="mt-2 list-disc pl-5 text-xs text-stone-600">
+          <ul className="mt-3 list-disc pl-5 text-xs text-[var(--muted)]">
             {lastMeta.closets.map((c) => (
               <li key={c.room}>
                 {c.room} — {c.lineCount} raw lines
@@ -260,7 +254,7 @@ export function DesignPdfImport({
             ))}
           </ul>
           {lastMeta.warnings.length > 0 && (
-            <ul className="mt-2 list-disc pl-5 text-xs text-amber-800">
+            <ul className="mt-3 list-disc pl-5 text-xs text-[var(--warn)]">
               {lastMeta.warnings.map((w, i) => (
                 <li key={i}>{w}</li>
               ))}

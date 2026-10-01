@@ -43,10 +43,6 @@ export function EstimateLinesView({
     preference,
     setPreference,
     effectiveLayout,
-    tableOverflows,
-    contentClipped,
-    needsCards,
-    viewportNarrow,
     measure,
   } = useLayoutMode(liveScrollRef);
 
@@ -78,68 +74,68 @@ export function EstimateLinesView({
   };
 
   return (
-    <div ref={containerRef} className="relative w-full min-w-0 space-y-4">
+    <div ref={containerRef} className="relative w-full min-w-0 space-y-5 sm:space-y-6">
       <TableWidthProbe tableRef={tableProbeRef} scrollRef={scrollProbeRef} />
 
-      <LayoutToolbar
-        lineCount={rows.length}
-        preference={preference}
-        setPreference={setPreference}
-        effectiveLayout={effectiveLayout}
-        tableOverflows={tableOverflows}
-        contentClipped={contentClipped}
-        needsCards={needsCards}
-        viewportNarrow={viewportNarrow}
-        showDesigner={showDesigner}
-      />
+      <div className="rounded-xl border border-[var(--border)] bg-white p-4 sm:p-5">
+        <LayoutToolbar
+          lineCount={rows.length}
+          preference={preference}
+          setPreference={setPreference}
+          effectiveLayout={effectiveLayout}
+          showDesigner={showDesigner}
+        />
+      </div>
 
       <AddLineToolbar request={request} onRequestChange={onRequestChange} />
 
-      {effectiveLayout === "cad" ? (
-        <CADEditor
-          request={request}
-          result={result}
-          onRequestChange={onRequestChange}
-        />
-      ) : effectiveLayout === "design" ? (
-        showDesigner ? (
-          <ClosetDesigner
+      <div className="min-w-0">
+        {effectiveLayout === "cad" ? (
+          <CADEditor
             request={request}
-            rows={rows}
-            onAddLine={onAddLine}
-            onChange={onChange}
-            onRemoveLine={removeLine}
-            projectFinish={request.finish}
-            selectedLineId={selectedLineId}
-            onSelectLine={setSelectedLineId}
+            result={result}
+            onRequestChange={onRequestChange}
           />
-        ) : (
-          <p className="rounded-xl border border-stone-200 bg-white p-6 text-sm text-stone-600">
-            Layout designer needs <strong>with_panels</strong> system (walk-in with
-            aluminum uprights). Change it in Project settings above.
-          </p>
-        )
-      ) : effectiveLayout === "cards" ? (
-        <div className="estimate-lines-cards grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3">
-          {rows.map((row) => (
-            <EstimateLineCard
-              key={row.line_id}
-              row={row}
-              projectFinish={request.finish}
+        ) : effectiveLayout === "design" ? (
+          showDesigner ? (
+            <ClosetDesigner
+              request={request}
+              rows={rows}
+              onAddLine={onAddLine}
               onChange={onChange}
-              onRemove={removeLine}
+              onRemoveLine={removeLine}
+              projectFinish={request.finish}
+              selectedLineId={selectedLineId}
+              onSelectLine={setSelectedLineId}
             />
-          ))}
-        </div>
-      ) : (
-        <EstimateLinesTable
-          rows={rows}
-          onChange={onChange}
-          scrollRef={liveScrollRef}
-          projectFinish={request.finish}
-          onRemoveLine={removeLine}
-        />
-      )}
+          ) : (
+            <p className="rounded-xl border border-[var(--border)] bg-white p-6 text-sm text-[var(--muted)]">
+              Layout designer needs <strong>With panels</strong> system. Change it
+              in the settings above.
+            </p>
+          )
+        ) : effectiveLayout === "cards" ? (
+          <div className="estimate-lines-cards grid grid-cols-1 gap-4 lg:grid-cols-2 2xl:grid-cols-3">
+            {rows.map((row) => (
+              <EstimateLineCard
+                key={row.line_id}
+                row={row}
+                projectFinish={request.finish}
+                onChange={onChange}
+                onRemove={removeLine}
+              />
+            ))}
+          </div>
+        ) : (
+          <EstimateLinesTable
+            rows={rows}
+            onChange={onChange}
+            scrollRef={liveScrollRef}
+            projectFinish={request.finish}
+            onRemoveLine={removeLine}
+          />
+        )}
+      </div>
     </div>
   );
 }
@@ -149,84 +145,41 @@ function LayoutToolbar({
   preference,
   setPreference,
   effectiveLayout,
-  tableOverflows,
-  contentClipped,
-  needsCards,
-  viewportNarrow,
   showDesigner,
 }: {
   lineCount: number;
   preference: LayoutPreference;
   setPreference: (p: LayoutPreference) => void;
   effectiveLayout: "cards" | "table" | "design" | "cad";
-  tableOverflows: boolean;
-  contentClipped: boolean;
-  needsCards: boolean;
-  viewportNarrow: boolean;
   showDesigner: boolean;
 }) {
-  const autoReason = needsCards
-    ? viewportNarrow
-      ? "Narrow screen — card view"
-      : contentClipped
-        ? "Fields clipped — card view"
-        : "Card view"
-    : "Table view";
-
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-stone-200 bg-white p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
-      <div className="min-w-0">
-        <p className="text-sm font-medium text-stone-800">
-          {lineCount} lines ·{" "}
-          <span className="text-stone-600">
-            {effectiveLayout === "cad"
-              ? "3D CAD"
-              : effectiveLayout === "design"
-                ? "Closet designer"
-                : effectiveLayout === "cards"
-                  ? "Card view"
-                  : "Table view"}
-          </span>
-        </p>
-        {preference === "auto" && effectiveLayout !== "design" && (
-          <p className="mt-0.5 text-xs text-stone-500">{autoReason}</p>
-        )}
-        {effectiveLayout === "cad" && (
-          <p className="mt-0.5 text-xs text-stone-500">
-            3D, table, cards, and 2D designer share the same lines and pricing.
-          </p>
-        )}
-        {(effectiveLayout === "table" || effectiveLayout === "cards") && (
-          <p className="mt-0.5 text-xs text-stone-500">
-            <span className="inline-block rounded bg-orange-100 px-1 text-orange-900">
-              orange
-            </span>{" "}
-            custom size ·{" "}
-            <span className="inline-block rounded bg-violet-100 px-1 text-violet-900">
-              violet
-            </span>{" "}
-            cut € · total shows catalog + cut
-          </p>
-        )}
-        {effectiveLayout === "design" && (
-          <p className="mt-0.5 text-xs text-stone-500">
-            Pick A–J, click a bay, then set sizes in the right panel.
-          </p>
-        )}
-      </div>
-      <div className="flex shrink-0 flex-wrap gap-2">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+      <p className="text-sm text-[var(--muted)]">
+        <span className="font-medium text-[var(--foreground)]">{lineCount}</span>{" "}
+        lines
+        <span className="mx-1.5 text-[var(--border)]">·</span>
+        {effectiveLayout === "cad"
+          ? "3D CAD"
+          : effectiveLayout === "design"
+            ? "2D layout"
+            : effectiveLayout === "cards"
+              ? "Cards"
+              : "Table"}
+      </p>
+      <div className="flex shrink-0 flex-wrap gap-1.5">
         <LayoutButton active={preference === "auto"} onClick={() => setPreference("auto")}>
           Auto
         </LayoutButton>
         <LayoutButton active={preference === "cad"} onClick={() => setPreference("cad")}>
-          3D CAD
+          3D
         </LayoutButton>
         {showDesigner && (
           <LayoutButton
             active={preference === "design"}
             onClick={() => setPreference("design")}
           >
-            2D Layout
+            2D
           </LayoutButton>
         )}
         <LayoutButton active={preference === "table"} onClick={() => setPreference("table")}>
@@ -253,10 +206,10 @@ function LayoutButton({
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-lg px-3 py-2 text-xs font-medium sm:text-sm ${
+      className={`rounded-md px-2.5 py-1.5 text-xs font-medium ${
         active
-          ? "bg-stone-900 text-white"
-          : "border border-stone-200 bg-stone-50 text-stone-700 hover:bg-stone-100"
+          ? "bg-[var(--primary)] text-white"
+          : "border border-[var(--border)] bg-white text-[var(--muted)] hover:bg-[#eef2f6] hover:text-[var(--foreground)]"
       }`}
     >
       {children}

@@ -15,39 +15,39 @@ export function AddLineToolbar({
   };
 
   return (
-    <div className="rounded-xl border border-dashed border-amber-300 bg-amber-50/60 p-4">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h3 className="text-sm font-semibold text-stone-800">Add items</h3>
-          <p className="mt-1 text-xs text-stone-600">
-            No CSV needed — add lines here with qty, dimensions, finish, and notes like the
-            template columns.
+    <div className="rounded-xl border border-dashed border-[#c5d0db] bg-[#f8fafc] p-4 sm:p-5">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="space-y-1">
+          <h3 className="text-sm font-semibold text-[var(--foreground)]">
+            Add items
+          </h3>
+          <p className="text-xs leading-relaxed text-[var(--muted)]">
+            Add shelves, panels, and other parts — then edit sizes in the table.
           </p>
         </div>
         <button
           type="button"
           onClick={() => add("shelf")}
-          className="shrink-0 rounded-lg bg-stone-900 px-4 py-2 text-sm font-medium text-white"
+          className="btn-primary shrink-0 py-2 text-xs sm:text-sm"
         >
           + Empty line
         </button>
       </div>
-      <div className="mt-3 flex flex-wrap gap-2">
+      <div className="mt-4 flex flex-wrap gap-2">
         {QUICK_ADD_ROLES.map(({ role, label, defaults }) => (
           <button
             key={role}
             type="button"
             onClick={() => add(role, defaults)}
-            className="rounded-lg border border-stone-200 bg-white px-3 py-1.5 text-xs font-medium text-stone-800 hover:border-amber-400 hover:bg-amber-50"
+            className="rounded-lg border border-[var(--border)] bg-white px-3 py-2 text-xs font-medium text-[var(--foreground)] hover:border-[#9eb0c2] hover:bg-white"
           >
             {label}
           </button>
         ))}
       </div>
       {request.lines.length === 0 && (
-        <p className="mt-3 text-xs text-amber-900">
-          Start with a quick-add button above, then fill in width, height, finish, and notes
-          in the table.
+        <p className="mt-4 text-xs text-[var(--muted)]">
+          No lines yet — use a quick-add button above to get started.
         </p>
       )}
     </div>

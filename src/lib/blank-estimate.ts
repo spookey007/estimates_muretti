@@ -28,7 +28,7 @@ export function createBlankRequest(
 ): EstimateRequest {
   return {
     schema_version: "1.0",
-    project_name: "New walk-in estimate",
+    project_name: "",
     price_list_id: "scenika-2023-10",
     measurement_unit: "mm",
     measurement_basis: "panel",
