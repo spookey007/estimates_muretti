@@ -1,14 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 268 52" fill="none" role="img" aria-label="muretti">
-  <title>muretti</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 48" fill="none" role="img" aria-label="MURETTI">
+  <title>MURETTI</title>
   <text
-    x="4"
-    y="34"
+    x="160"
+    y="33"
+    text-anchor="middle"
     fill="currentColor"
-    font-family="Inter, 'Segoe UI', Arial, Helvetica, sans-serif"
-    font-size="32"
-    font-weight="600"
-    letter-spacing="-0.015em"
-  >muretti</text>
-  <!-- Brand accent (replaces a period) -->
-  <circle cx="250" cy="38" r="5.25" fill="#E8917A"/>
+    font-family="Arial Black, Arial, Helvetica, sans-serif"
+    font-size="28"
+    font-weight="800"
+    letter-spacing="0.22em"
+  >MURETTI</text>
 </svg>
